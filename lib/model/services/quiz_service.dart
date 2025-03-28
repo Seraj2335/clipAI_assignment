@@ -25,24 +25,16 @@ class QuizService extends BaseService {
             "messages": [
               {
                 "role": "user",
-                "content":
-                    "Create a list jsondata 0f format ${{
-                "question": " ",
-                 "options": [
-                  "",
-               "",
-                    "",
-                   ""
-                  ],
-               "answer": ""}
-                } of length 5 quizzes with 4 options of $category category"
+                "content": "Create a list jsondata 0f format ${{
+                  "question": " ",
+                  "options": ["", "", "", ""],
+                  "answer": ""
+                }} of length 5 quizzes with 4 options of $category category"
               }
             ]
           }));
-print('>>>>>>>> API called');
+      print('>>>>>>>> API called');
       responseJson = returnResponse(response);
-
-
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }

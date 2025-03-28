@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:clipwise_ai_assignment/model/models/category_model.dart';
 import 'package:clipwise_ai_assignment/model/models/quiz_list_model.dart';
 
 import '../models/groq_response_model.dart';
@@ -19,5 +20,15 @@ class QuizRepository {
     final jsonContent = contentString.substring(jsonStart, jsonEnd).trim();
 
     return quizListFromJson(jsonContent);
+  }
+
+  Future<dynamic> fetchQuizCategory(String category) async {
+    final response = await _quizService.getResponse(category);
+    String contentString =
+        QuizResponse.fromJson(response).choices![0].message!.content!;
+    final jsonStart = contentString.indexOf('```json') + '```json'.length;
+    final jsonEnd = contentString.lastIndexOf('```');
+    final jsonContent = contentString.substring(jsonStart, jsonEnd).trim();
+    return quizCategoryFromJson(jsonContent).quizCategory;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:clipwise_ai_assignment/model/models/groq_response_model.dart';
 import 'package:clipwise_ai_assignment/model/models/quiz_list_model.dart';
+import 'package:clipwise_ai_assignment/view/widgets/decorated_container.dart';
 import 'package:clipwise_ai_assignment/view/widgets/shimmer_list.dart';
 import 'package:clipwise_ai_assignment/view_model/quiz_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,9 @@ import 'package:provider/provider.dart';
 import '../model/apis/api_reponse.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  final String category;
+
+  const QuizScreen({super.key, required this.category});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -19,8 +22,9 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
+
     final provider = Provider.of<QuizProvider>(context, listen: false);
-    provider.fetchQuizList('films');
+    provider.fetchQuizList(widget.category);
   }
 
   @override
@@ -51,7 +55,6 @@ class _QuizScreenState extends State<QuizScreen> {
                     itemBuilder: (context, index) {
                       List<String> options = quizList[index].options!;
                       return Column(
-
                         children: [
                           Padding(
                             padding: EdgeInsets.only(top: size.height * .05),
@@ -101,82 +104,5 @@ class _QuizScreenState extends State<QuizScreen> {
                     }));
           }
         }));
-  }
-}
-
-class DecoratedContainer extends StatelessWidget {
-  final String text;
-  final Color? secondColor;
-  final Alignment? alignment;
-  final int? indexO;
-  final int? indexQ;
-  final String? answer;
-  final QuizProvider? provider;
-
-  const DecoratedContainer({
-    super.key,
-    this.indexO,
-    this.indexQ,
-    this.provider,
-    this.answer,
-    required this.text,
-    this.secondColor,
-    this.alignment,
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (provider != null) {
-          provider!.checkAnswer(indexQ!, indexO!, text == answer!);
-        }
-      },
-      child: Container(
-          alignment: alignment,
-          margin: EdgeInsets.only(bottom: size.height * .02),
-          padding: EdgeInsets.symmetric(
-              horizontal: size.width * .05, vertical: size.width * .03),
-          decoration: BoxDecoration(
-              color: Color(0xff212426),
-              gradient: LinearGradient(colors: [
-                Color(0xff000000),
-                secondColor ?? Color(0x00000000)
-              ]),
-              border: Border.all(
-                  color: getColor(provider?.selectedOptions[indexQ!][indexO!]),
-                  width: .5),
-              boxShadow: [
-                BoxShadow(
-                    offset: Offset(2, 1),
-                    blurRadius: 1,
-                    spreadRadius: 0,
-                    color: Color(0x28000000)),
-                BoxShadow(
-                    offset: Offset(-2, -3),
-                    blurRadius: 2,
-                    spreadRadius: 0,
-                    color: Color(0x0AFFFFFF))
-              ],
-              borderRadius: BorderRadius.all(
-                  Radius.circular(secondColor != null ? 10 : 25))),
-          child: Text(
-            text,
-            style: TextStyle(color: Colors.white),
-          )),
-    );
-  }
-
-  Color getColor(value) {
-    if (value == null) {
-      return Color(0x05000000);
-    } else if (value == false) {
-      return Colors.red;
-    } else {
-      return Colors.green;
-    }
   }
 }
