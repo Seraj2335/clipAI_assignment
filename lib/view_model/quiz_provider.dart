@@ -8,15 +8,19 @@ import '../model/respositories/response_repositories.dart';
 
 class QuizProvider with ChangeNotifier {
   ApiResponse _apiResponse = ApiResponse.initial('Empty data');
+  List<List<bool?>> _selectedOptions = [];
+
+  List<List<bool?>> get selectedOptions => _selectedOptions;
 
   ApiResponse get response => _apiResponse;
 
   void fetchQuizList(String category) async {
+    _apiResponse = ApiResponse.initial('loading');
     try {
-      _apiResponse = ApiResponse.initial('loading');
-      List<QuizList> quizList =
-          await QuizRepository().fetchQuizList(category);
-
+      List<QuizList> quizList = await QuizRepository().fetchQuizList(category);
+      _selectedOptions = quizList
+          .map((quiz) => List<bool?>.filled(quiz.options!.length, null))
+          .toList();
       _apiResponse = ApiResponse.completed(quizList);
       notifyListeners();
     } catch (e) {
@@ -24,5 +28,16 @@ class QuizProvider with ChangeNotifier {
       notifyListeners(); // Notify listeners of the error
       rethrow;
     }
+  }
+
+  void checkAnswer(int questionIndex, int optionIndex, bool isCorrect) {
+    _selectedOptions[questionIndex][optionIndex] = isCorrect;
+    notifyListeners();
+  }
+
+  void resetOptions(int questionIndex) {
+    _selectedOptions[questionIndex] =
+        List.generate(_selectedOptions[questionIndex].length, (index) => null);
+    notifyListeners();
   }
 }
